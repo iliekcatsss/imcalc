@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Calculadora IMC Inteligente</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #121212;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+        .card {
+            background: #1e1e1e;
+            padding: 25px;
+            border-radius: 20px;
+            width: 380px;
+            box-shadow: 0 20px 50px rgba(0,0,0,0.5);
+            border: 1px solid #333;
+            color: white;
+        }
+        h1 { text-align: center; }
+        h2 { text-align: center; }
+        h3 { text-align: center; }
+        h4 { text-align: center; }
+        label {
+            font-weight: bold;
+            margin-top: 10px;
+            display: block;
+        }
+        input, select {
+            width: 100%;
+            padding: 8px;
+            margin-top: 5px;
+            background: #353535;
+            color: white;
+            border-radius: 10px;
+            border: none;
+            box-sizing: border-box;
+            box-shadow: inset 0 2px 5px rgba(0, 0, 0, 0.5);
+        }
+        button {
+            width: 100%;
+            padding: 8px;
+            margin-top: 5px;
+            background: #353535;
+            border-radius: 10px;
+            border: none;
+            box-sizing: border-box;
+        }
+        .age-group {
+            display: flex;
+            gap: 10px;
+        }
+        button {
+            margin-top: 15px;
+            background: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            font-size: 16px;
+            cursor: pointer;
+        }
+        .result {
+            width: 100%;
+            min-height: 60px;
+            background: #2d2d2d;
+            border: none;
+            border-radius: 10px;
+            margin-top: 20px;
+            color: white;
+            text-align: center;
+            padding: 15px;
+            box-sizing: border-box;
+            outline: none;
+            box-shadow: inset 0 2px 5px rgba(0,0,0,0.5);
+        }
+    </style>
+</head>
+
+<body>
+<div class="card">
+<h1>Calculadora IMC</h1>
+<!--<h2>Hecha por <a href="https://guns.lol/iliekcatsss">ILikeCats</a></h2>-->
+
+<label>Sexo</label>
+<select id="sexo">
+    <option value="hombre">Hombre</option>
+    <option value="mujer">Mujer</option>
+</select>
+
+<label>Edad (opcional)</label>
+<div class="age-group">
+    <input type="number" id="edadAnios" placeholder="Años" min="0" max="120">
+    <input type="number" id="edadMeses" placeholder="Meses" min="0" max="11">
+</div>
+
+<label>Peso (kg)</label>
+<input type="number" id="peso" step="0.1" min="1">
+
+<label>Altura (cm)</label>
+<input type="number" id="altura" min="30">
+
+<button onclick="calcularIMC()">Calcular</button>
+
+<div class="result" id="resultado"></div>
+</div>
+
+<script>
+function calcularIMC() {
+    const sexo = document.getElementById("sexo").value;
+    const peso = parseFloat(document.getElementById("peso").value);
+    const alturaCm = parseFloat(document.getElementById("altura").value);
+
+    const anios = parseInt(document.getElementById("edadAnios").value);
+    const meses = parseInt(document.getElementById("edadMeses").value);
+
+    if (!peso || !alturaCm) {
+        resultado.innerHTML = "⚠️ Completa peso y altura.";
+        return;
+    }
+
+    const edadTotal =
+        (!isNaN(anios) ? anios : 0) +
+        (!isNaN(meses) ? meses / 12 : 0);
+
+    const altura = alturaCm / 100;
+    const imc = peso / (altura * altura);
+
+    let rango = "";
+    let complexion = "";
+
+    // Ajustes base
+    let bajo = 18.5;
+    let normal = 25;
+    let sobrepeso = 30;
+
+    // Ajuste por sexo
+    if (sexo === "mujer") {
+        bajo -= 0.5;
+    } else {
+        normal += 0.5;
+    }
+
+    // Ajuste por edad
+    if (edadTotal > 0 && edadTotal < 18) {
+        bajo -= 1.5;
+        normal += 1;
+    } else if (edadTotal >= 60) {
+        bajo += 1;
+        normal -= 1;
+    }
+
+    // Clasificación final
+    if (imc < bajo - 2) {
+        rango = "Bajo peso severo";
+        complexion = "Extremadamente delgado";
+    } else if (imc < bajo) {
+        rango = "Bajo peso";
+        complexion = "Delgado";
+    } else if (imc < (bajo + normal) / 2) {
+        rango = "Peso saludable bajo";
+        complexion = "Normal estilizado";
+    } else if (imc < normal) {
+        rango = "Peso saludable";
+        complexion = "Normal";
+    } else if (imc < sobrepeso) {
+        rango = "Sobrepeso";
+        complexion = "Llenito";
+    } else {
+        rango = "Obesidad";
+        complexion = "Muy llenito";
+    }
+
+    resultado.innerHTML = `
+        <strong>IMC:</strong> ${imc.toFixed(2)}<br>
+        <strong>Rango:</strong> ${rango}<br>
+        <strong>Complexión:</strong> ${complexion}<br>
+        <small>Edad considerada: ${edadTotal.toFixed(1)} años</small>
+    `;
+}
+</script>
+
+</body>
+</html>
