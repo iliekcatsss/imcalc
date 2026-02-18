@@ -1,0 +1,276 @@
+<!--
+Parte del código, específicamente los niveles de IMC, están creados con ayuda de inteligencia artificial.
+Estos NO deben tomarse como una verdad absoluta, sino como una referencia.
+Si buscas un cálculo preciso de tu índice de masa corporal, acude a un nutriólogo.
+-->
+
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Calculadora IMC Inteligente</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #121212;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            padding: 20px;
+            box-sizing: border-box;
+        }
+        .card {
+            background: #1e1e1e;
+            padding: 25px;
+            border-radius: 20px;
+            width: 100%;
+            max-width: 380px;
+            box-shadow: 0 20px 50px rgba(0,0,0,0.5);
+            border: 1px solid #333;
+            color: white;
+        }
+        h1 { text-align: center; }
+        h2 { text-align: center; }
+        h3 { text-align: center; }
+        h4 { text-align: center; }
+        label {
+            font-weight: bold;
+            margin-top: 10px;
+            display: block;
+        }
+        input, select {
+            width: 100%;
+            padding: 8px;
+            margin-top: 5px;
+            background: #353535;
+            color: white;
+            border-radius: 10px;
+            border: 2px solid transparent;
+            transition: all 0.3s ease;
+            box-sizing: border-box;
+            box-shadow: inset 0 2px 5px rgba(0, 0, 0, 0.5);
+        }
+        .age-group {
+            display: flex;
+            gap: 10px;
+        }
+        button {
+            width: 100%;
+            margin-top: 15px;
+            font-weight: bold;
+            background: #4c93af;
+            color: white;
+            transition: all 0.3s ease;
+            border:none;
+            border-radius: 10px;
+            font-size: 20px;
+            cursor: pointer;
+            padding: 15px;
+            box-sizing: border-box;
+
+        }
+        button:hover {
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+            background: #444;
+            transform: translateY(-3px)
+        }
+        button:active {
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+            transform: translateY(1px);
+        }
+        .result {
+            width: 100%;
+            min-height: 0px;
+            background: #2d2d2d;
+            border: 2px solid transparent;
+            transition: all 0.3s ease;
+            border-radius: 10px;
+            margin-top: 20px;
+            color: white;
+            text-align: center;
+            padding: 15px;
+            box-sizing: border-box;
+            outline: none;
+            box-shadow: inset 0 2px 5px rgba(0,0,0,0.5);
+        }
+        small, .nota-pie {
+            display:block;
+            margin-top: 15px;
+            text-align: center;
+            font-size: 12px;
+            color: #888;
+            font-style: italic;
+        }
+        .footer-promo {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 15px;
+            margin-top: 30px;
+            margin-bottom: 20px;
+            width: 100%;
+        }
+        .footer-promo span {
+            color:white;
+            font-weight: bold;
+            font-size: 18px;
+        }
+        .btn-promo {
+            bottom: 20px;
+            right: 45%;
+            background: rgba(255, 255, 255, 0.05);
+            color: #888;
+            text-decoration: none;
+            padding: 10px 18px;
+            border-radius: 30px;
+            border: 1px solid #333;
+            font-size: 13px;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(5px);
+        }
+        .btn-promo:hover {
+            background: #4c93af;
+            color:white;
+            border-color: #4c93af;
+            transform: scale(1.05);
+            box-shadow: 0 4px 15px rgba(76, 147, 175, 0.3);
+        }
+        .label-promo {
+            position: fixed;
+            bottom: 10px;
+            right: 50%;
+            text-decoration: none;
+            padding: 20px 0 20px;
+            font-size: 13px;
+            font-weight: 500;
+            color: #fff;
+        }
+    </style>
+</head>
+
+<body>
+<div class="card">
+<h1>Calculadora IMC</h1>
+<!--<h2>Hecha por <a href="https://guns.lol/iliekcatsss">ILikeCats</a></h2>-->
+
+<label>Sexo</label>
+<select id="sexo">
+    <option value="hombre">Hombre</option>
+    <option value="mujer">Mujer</option>
+</select>
+
+<label>Edad (opcional)</label>
+<div class="age-group">
+    <input type="number" id="edadAnios" placeholder="Años" min="0" max="120">
+    <input type="number" id="edadMeses" placeholder="Meses" min="0" max="11">
+</div>
+
+<label>Peso (kg)</label>
+<input type="number" id="peso" step="0.1" min="1">
+
+<label>Altura (cm)</label>
+<input type="number" id="altura" min="30">
+
+<button onclick="calcularIMC()">Calcular</button>
+
+<div class="result" id="resultado"></div>
+<label class="nota-pie">Nota: Los rangos no son 100% confiables, los hice con ChatGPT</label>
+</div>
+<div class="footer-promo">
+<span>Creado por</span>
+<a href="https://github.com/iliekcatsss" class="btn-promo" target="_blank">
+    ILikeCats
+</a>
+</div>
+
+<script>
+function calcularIMC() {
+    const sexo = document.getElementById("sexo").value;
+    const peso = parseFloat(document.getElementById("peso").value);
+    const alturaCm = parseFloat(document.getElementById("altura").value);
+    const anios = parseInt(document.getElementById("edadAnios").value) || 0;
+    const meses = parseInt(document.getElementById("edadMeses").value) || 0;
+
+    if (!peso || !alturaCm) {
+        document.getElementById("resultado").innerHTML = "Pon el peso y la altura, puñetón.";
+        return;
+    }
+
+    const edadTotal = anios + (meses / 12);
+    const altura = alturaCm / 100;
+    const imc = peso / (altura * altura);
+
+    // Configuración de límites dinámicos
+    let bajo, normal, sobrepeso;
+
+    if (edadTotal > 0 && edadTotal < 18) {
+        // Rangos para niños/adolescentes (Simplificado de tablas CDC)
+        bajo = 14 + (edadTotal * 0.2); 
+        normal = 18 + (edadTotal * 0.4);
+        sobrepeso = 22 + (edadTotal * 0.5);
+    } else if (edadTotal >= 65) {
+        // Adultos mayores (necesitan un IMC un poco más alto)
+        bajo = 22;
+        normal = 27;
+        sobrepeso = 32;
+    } else {
+        // Adultos estándar
+        bajo = 18.5;
+        normal = 24.9;
+        sobrepeso = 29.9;
+    }
+
+    // Ajuste fino por sexo
+    if (sexo === "mujer") {
+        bajo -= 0.5;
+        normal -= 0.5;
+    }
+
+    // Clasificación
+    if (imc < bajo - 2) {
+        rango = "Bajo peso severo";
+        complexion = "Extremadamente delgado";
+    } else if (imc < bajo) {
+        rango = "Bajo peso";
+        complexion = "Delgado";
+    } else if (imc < (bajo + normal) / 2) {
+        rango = "Peso saludable bajo";
+        complexion = "Normal pero algo flaco";
+    } else if (imc < normal) {
+        rango = "Peso saludable";
+        complexion = "Normal";
+    } else if (imc < (sobrepeso + normal) / 2) {
+        rango = "Peso saludable alto";
+        complexion = "Normal pero llenito";
+    } else if (imc < sobrepeso) {
+        rango = "Sobrepeso";
+        complexion = "Gordo";
+    } else {
+        rango = "Obesidad";
+        complexion = "Bien puto gordo";
+    }
+
+    document.getElementById("resultado").innerHTML = `
+        <strong>IMC:</strong> ${imc.toFixed(2)}<br>
+        <strong>Rango:</strong> ${rango}<br>
+        <strong>Complexión:</strong> ${complexion}<br>
+        <small>Edad considerada: ${edadTotal.toFixed(1)} años</small>
+    `;
+
+    if (rango === "Peso saludable") {
+        resultado.style.borderColor = "#4CAF50"; // Verde
+    } else if (rango === "Obesidad" || rango === "Bajo peso severo") {
+        resultado.style.borderColor = "#FF5252"; // Rojo
+    } else {
+        resultado.style.borderColor = "#FFD740"; // Amarillo/Naranja
+    }
+}
+</script>
+
+</body>
+</html>
